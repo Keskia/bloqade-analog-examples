@@ -4,8 +4,20 @@ Compte X (Twitter) d'**actu foot au ton satirique**, avec posts générés
 automatiquement, **validation humaine via Telegram**, et (à terme) un agent
 qui apprend ce qui génère le plus d'impressions.
 
-> État actuel : **brique 1 — la source d'actu gratuite** (`news_ingest.py`).
-> Le reste de l'architecture est décrit plus bas.
+> État actuel : **brique 1** (source d'actu, `news_ingest.py`) + **brique 2**
+> (générateur Mistral, `generator.py`). Le reste de l'architecture est décrit plus bas.
+
+## Pipeline en 2 commandes (état actuel)
+
+```bash
+export MISTRAL_API_KEY="..."                       # clé gratuite console.mistral.ai
+python news_ingest.py --max-age 12 --out actus.json   # 1) récupère l'actu gratuite
+python generator.py --from actus.json --limit 3        # 2) génère des posts satiriques
+```
+
+Angles d'humour disponibles (`--angle`) : `ironie`, `fausse_breaking`,
+`punchline`, `fan_depressif`, `consultant_bidon`. Chaque brouillon garde son
+angle → la future boucle d'apprentissage saura lequel performe.
 
 ---
 
@@ -78,6 +90,7 @@ Chaque actu est normalisée ainsi (prête pour le générateur) :
 
 ```bash
 python test_news_ingest.py   # tests hors-ligne (réseau mocké) : RSS, Atom, Reddit, dédup, tri, filtre
+python test_generator.py     # tests hors-ligne (LLM mocké) : sanitization, longueur, angles, few-shot
 ```
 
 ---
@@ -89,12 +102,13 @@ python test_news_ingest.py   # tests hors-ligne (réseau mocké) : RSS, Atom, Re
  │ news_ingest │──▶│  Générateur  │──▶│ Validation     │──▶│ Publish  │──▶│  Métriques    │
  │ (RSS+Reddit)│   │  (Mistral)   │   │ Telegram (HITL)│   │   X      │   │ + Apprentissage│
  └─────────────┘   └──────────────┘   └────────────────┘   └──────────┘   └───────────────┘
-       ✅ FAIT            à venir            à venir            à venir          à venir
+       ✅ FAIT          ✅ FAIT             à venir            à venir          à venir
 ```
 
-1. **`news_ingest`** ✅ — récupère l'actu gratuitement (cette brique).
-2. **Générateur** — Mistral (free tier) + prompt de persona satirique + exemples
-   few-shot des meilleurs posts passés.
+1. **`news_ingest`** ✅ — récupère l'actu gratuitement.
+2. **`generator`** ✅ — Mistral (free tier) + persona satirique (`persona.py`) +
+   exemples few-shot (`examples.json`, remplaçables par les meilleurs posts réels).
+   Garde-fous : ≤280 car., satire évidente, pas de diffamation, pas de fausses citations.
 3. **Validation Telegram** — bot avec boutons `✅ Publier / ✏️ Éditer / ❌ Rejeter`
    avant toute publication (humain dans la boucle).
 4. **Publication X** — API gratuite (écriture). ⚠️ Les **réponses automatiques**

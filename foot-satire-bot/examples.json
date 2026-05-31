@@ -1,0 +1,9 @@
+{
+  "_comment": "Exemples few-shot qui amorcent le style. PLUS TARD, la boucle d'apprentissage remplacera/complétera ce fichier par les meilleurs posts réels (ceux qui ont fait le plus d'impressions). Garde 3-6 exemples courts et variés.",
+  "examples": [
+    { "angle": "ironie",          "news_title": "Le PSG dépense 200M€ sur le mercato", "post": "Le PSG recrute encore 200M€ de joueurs pour enfin gagner ce 8e de finale qu'ils perdront en mars. La tradition, c'est sacré. 🏆" },
+    { "angle": "fan_depressif",   "news_title": "Défaite de l'OM à domicile",          "post": "On a perdu à la maison. Encore. À ce stade c'est plus un club, c'est un abonnement à la déception." },
+    { "angle": "fausse_breaking", "news_title": "Un arbitre conteste après le match",   "post": "🚨 BREAKING : la VAR demande à son tour un recours après avoir vu la décision qu'on lui a fait prendre." },
+    { "angle": "consultant_bidon","news_title": "Une équipe joue en 4-4-2",             "post": "Le 4-4-2, c'est avant tout un état d'esprit, une philosophie cartésienne de l'occupation des demi-espaces. Bref, ils mettent 4 derrière." }
+  ]
+}
