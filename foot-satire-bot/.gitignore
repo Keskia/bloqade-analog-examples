@@ -1,0 +1,12 @@
+# Secrets
+.env
+
+# Données runtime (générées localement)
+actus.json
+drafts.json
+decisions.jsonl
+approved.jsonl
+
+# Python
+__pycache__/
+*.pyc

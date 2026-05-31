@@ -4,15 +4,20 @@ Compte X (Twitter) d'**actu foot au ton satirique**, avec posts générés
 automatiquement, **validation humaine via Telegram**, et (à terme) un agent
 qui apprend ce qui génère le plus d'impressions.
 
-> État actuel : **brique 1** (source d'actu, `news_ingest.py`) + **brique 2**
-> (générateur Mistral, `generator.py`). Le reste de l'architecture est décrit plus bas.
+> État actuel : **briques 1-3** — source d'actu (`news_ingest.py`), générateur
+> Mistral (`generator.py`), validation Telegram (`telegram_review.py`).
+> Reste : publication X + apprentissage. Architecture complète plus bas.
 
-## Pipeline en 2 commandes (état actuel)
+## Pipeline (état actuel)
 
 ```bash
-export MISTRAL_API_KEY="..."                       # clé gratuite console.mistral.ai
-python news_ingest.py --max-age 12 --out actus.json   # 1) récupère l'actu gratuite
-python generator.py --from actus.json --limit 3        # 2) génère des posts satiriques
+export MISTRAL_API_KEY="..."                          # clé gratuite console.mistral.ai
+export TELEGRAM_BOT_TOKEN="..." TELEGRAM_CHAT_ID="..." # bot @BotFather + ton chat id
+
+python news_ingest.py --max-age 12 --out actus.json    # 1) actu gratuite
+python generator.py --from actus.json --out drafts.json # 2) brouillons satiriques
+python telegram_review.py --from drafts.json            # 3) validation ✅/✏️/❌ sur Telegram
+# -> les posts approuvés atterrissent dans approved.jsonl (file pour la publication X)
 ```
 
 Angles d'humour disponibles (`--angle`) : `ironie`, `fausse_breaking`,
@@ -89,8 +94,9 @@ Chaque actu est normalisée ainsi (prête pour le générateur) :
 ## Tests
 
 ```bash
-python test_news_ingest.py   # tests hors-ligne (réseau mocké) : RSS, Atom, Reddit, dédup, tri, filtre
-python test_generator.py     # tests hors-ligne (LLM mocké) : sanitization, longueur, angles, few-shot
+python test_news_ingest.py     # RSS, Atom, Reddit, dédup, tri, filtre (réseau mocké)
+python test_generator.py       # sanitization, longueur, angles, few-shot (LLM mocké)
+python test_telegram_review.py # approve/reject/edit, file, log, dispatch (Telegram mocké)
 ```
 
 ---
@@ -102,15 +108,15 @@ python test_generator.py     # tests hors-ligne (LLM mocké) : sanitization, lon
  │ news_ingest │──▶│  Générateur  │──▶│ Validation     │──▶│ Publish  │──▶│  Métriques    │
  │ (RSS+Reddit)│   │  (Mistral)   │   │ Telegram (HITL)│   │   X      │   │ + Apprentissage│
  └─────────────┘   └──────────────┘   └────────────────┘   └──────────┘   └───────────────┘
-       ✅ FAIT          ✅ FAIT             à venir            à venir          à venir
+       ✅ FAIT          ✅ FAIT            ✅ FAIT             à venir          à venir
 ```
 
 1. **`news_ingest`** ✅ — récupère l'actu gratuitement.
 2. **`generator`** ✅ — Mistral (free tier) + persona satirique (`persona.py`) +
    exemples few-shot (`examples.json`, remplaçables par les meilleurs posts réels).
    Garde-fous : ≤280 car., satire évidente, pas de diffamation, pas de fausses citations.
-3. **Validation Telegram** — bot avec boutons `✅ Publier / ✏️ Éditer / ❌ Rejeter`
-   avant toute publication (humain dans la boucle).
+3. **`telegram_review`** ✅ — bot polling avec boutons `✅ Publier / ✏️ Éditer / ❌ Rejeter`.
+   Humain dans la boucle, posts approuvés → `approved.jsonl`, décisions → `decisions.jsonl`.
 4. **Publication X** — API gratuite (écriture). ⚠️ Les **réponses automatiques**
    et les **impressions par post** nécessitent le tier payant *Basic (~100 $/mois)* :
    tant qu'on reste gratuit, on publie sans répondre ni mesurer finement.
