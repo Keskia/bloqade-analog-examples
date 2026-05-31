@@ -6,6 +6,7 @@ actus.json
 drafts.json
 decisions.jsonl
 approved.jsonl
+published.jsonl
 
 # Python
 __pycache__/
