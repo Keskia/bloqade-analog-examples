@@ -1,0 +1,15 @@
+{
+  "_comment": "Sources d'actualité foot 100% gratuites (RSS + Reddit). Lance `python news_ingest.py --validate` chez toi pour ne garder que celles qui répondent (HTTP 200). Beaucoup de médias FR bloquent les bots sans User-Agent navigateur : le script en envoie un par défaut. Si un flux renvoie 403/404, remplace l'URL ou retire l'entrée.",
+
+  "feeds": [
+    { "name": "L'Équipe Football",  "type": "rss",    "url": "https://www.lequipe.fr/rss/actu_rss_Football.xml", "lang": "fr", "tags": ["fr", "general"] },
+    { "name": "So Foot",            "type": "rss",    "url": "https://www.sofoot.com/rss.xml",                   "lang": "fr", "tags": ["fr", "general", "ton-decale"] },
+    { "name": "RMC Sport Football", "type": "rss",    "url": "https://rmcsport.bfmtv.com/rss/football/",         "lang": "fr", "tags": ["fr", "general"] },
+    { "name": "Foot Mercato",       "type": "rss",    "url": "https://www.footmercato.net/rss",                  "lang": "fr", "tags": ["fr", "mercato"] },
+    { "name": "Maxifoot",           "type": "rss",    "url": "https://www.maxifoot.fr/rss/actualite-football.xml","lang": "fr", "tags": ["fr", "general"] },
+    { "name": "BBC Sport Football", "type": "rss",    "url": "https://feeds.bbci.co.uk/sport/football/rss.xml",  "lang": "en", "tags": ["en", "general"] },
+    { "name": "Guardian Football",  "type": "rss",    "url": "https://www.theguardian.com/football/rss",         "lang": "en", "tags": ["en", "general"] },
+    { "name": "Reddit r/ligue1",    "type": "reddit", "url": "https://www.reddit.com/r/ligue1/hot.json?limit=25","lang": "fr", "tags": ["fr", "trending"] },
+    { "name": "Reddit r/soccer",    "type": "reddit", "url": "https://www.reddit.com/r/soccer/hot.json?limit=25","lang": "en", "tags": ["en", "trending"] }
+  ]
+}

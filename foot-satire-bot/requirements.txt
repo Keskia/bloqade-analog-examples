@@ -1,0 +1,7 @@
+# Obligatoire
+requests>=2.31
+
+# Optionnel : rend le parsing RSS plus robuste (Atom mal formé, dates exotiques).
+# Si l'install échoue (compilation de sgmllib3k), tu peux l'ignorer : le script
+# bascule automatiquement sur le parser de la lib standard.
+# feedparser>=6.0
